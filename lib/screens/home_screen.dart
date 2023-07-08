@@ -21,9 +21,21 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Pet> get searchedList {
     List<Pet> availableList = [];
     if (pets != null && pets!.isNotEmpty) {
-      availableList.addAll(pets!.where((element) => element.name!
-          .toLowerCase()
-          .contains(_petNameController.text.toLowerCase())));
+      availableList.addAll(pets!.where((element) {
+        if (element.name!
+            .toLowerCase()
+            .contains(_petNameController.text.toLowerCase())) {
+          return true;
+        }
+        if (element.breedGroup != null) {
+          if (element.breedGroup!
+              .toLowerCase()
+              .contains(_petNameController.text.toLowerCase())) {
+            return true;
+          }
+        }
+        return false;
+      }));
       return availableList;
     }
     return [];
@@ -43,88 +55,94 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        body: CustomScrollView(
-          slivers: [
-            BlocListener<PetBloc, PetState>(
-              listener: (context, state) {
-                if (state is PetLoaded) {
-                  setState(() {
-                    pets = state.pets;
-                  });
-                }
-              },
-              child: SliverToBoxAdapter(child: Container()),
-            ),
-            SliverAppBar(
-              floating: true,
-              title: Text(
-                "Pet Adoption",
-                style: Theme.of(context).textTheme.headlineSmall,
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          body: CustomScrollView(
+            slivers: [
+              BlocListener<PetBloc, PetState>(
+                listener: (context, state) {
+                  if (state is PetLoaded) {
+                    setState(() {
+                      pets = state.pets;
+                    });
+                  }
+                },
+                child: SliverToBoxAdapter(child: Container()),
               ),
-              actions: [
-                PopupMenuButton(
-                  onSelected: (val) {
-                    if (val == "history") {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const HistoryScreen()));
-                    }
-                  },
-                  itemBuilder: (context) => const [
-                    PopupMenuItem(
-                      value: "history",
-                      child: Text("History"),
-                    ),
-                  ],
-                )
-              ],
-            ),
-            SliverToBoxAdapter(
-              child: Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(15),
+              SliverAppBar(
+                floating: true,
+                title: Text(
+                  "Pet Adoption",
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
-                child: TextField(
-                  controller: _petNameController,
-                  decoration: const InputDecoration(
-                      border: InputBorder.none, hintText: "search"),
-                ),
-              ),
-            ),
-            if (pets != null && pets!.isNotEmpty) ...[
-              if (_petNameController.text.isNotEmpty) ...[
-                if (searchedList.isEmpty) ...[
-                  const SliverToBoxAdapter(
-                    child: Text("Cannot find the search result"),
+                actions: [
+                  PopupMenuButton(
+                    onSelected: (val) {
+                      if (val == "history") {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => const HistoryScreen()));
+                      }
+                    },
+                    itemBuilder: (context) => const [
+                      PopupMenuItem(
+                        value: "history",
+                        child: Text("History"),
+                      ),
+                    ],
                   )
+                ],
+              ),
+              SliverToBoxAdapter(
+                child: Container(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: TextField(
+                    controller: _petNameController,
+                    decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "search for name or breed"),
+                  ),
+                ),
+              ),
+              if (pets != null && pets!.isNotEmpty) ...[
+                if (_petNameController.text.isNotEmpty) ...[
+                  if (searchedList.isEmpty) ...[
+                    const SliverToBoxAdapter(
+                      child: Text("Cannot find the search result"),
+                    )
+                  ] else ...[
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        childCount: searchedList.length,
+                        (context, index) {
+                          Pet pet = searchedList[index];
+                          return PetCard(pet: pet);
+                        },
+                      ),
+                    ),
+                  ]
                 ] else ...[
                   SliverList(
                     delegate: SliverChildBuilderDelegate(
-                      childCount: searchedList.length,
+                      childCount: pets!.length,
                       (context, index) {
-                        Pet pet = searchedList[index];
+                        Pet pet = pets![index];
                         return PetCard(pet: pet);
                       },
                     ),
                   ),
-                ]
-              ] else ...[
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    childCount: pets!.length,
-                    (context, index) {
-                      Pet pet = pets![index];
-                      return PetCard(pet: pet);
-                    },
-                  ),
-                ),
+                ],
               ],
             ],
-          ],
+          ),
         ),
       ),
     );

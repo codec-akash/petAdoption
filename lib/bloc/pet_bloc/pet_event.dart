@@ -10,3 +10,5 @@ class AdoptPet extends PetEvent {
   final int id;
   AdoptPet({required this.id});
 }
+
+class LoadAdoptedPet extends PetEvent {}

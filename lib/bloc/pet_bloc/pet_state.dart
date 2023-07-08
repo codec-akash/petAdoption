@@ -28,3 +28,12 @@ class PetAdopted extends PetState {
 
   PetAdopted({required this.pet});
 }
+
+class AdoptedPetLoaded extends PetState {
+  final List<Pet> adoptedPet;
+
+  AdoptedPetLoaded({required this.adoptedPet});
+
+  @override
+  List<Object> get props => [adoptedPet];
+}

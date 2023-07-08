@@ -96,7 +96,7 @@ class _PetCardState extends State<PetCard> {
                             BorderRadius.horizontal(left: Radius.circular(15)),
                         color: Colors.black,
                       ),
-                      child: Text("Adopted"),
+                      child: const Text("Adopted"),
                     ),
                   ),
               ],

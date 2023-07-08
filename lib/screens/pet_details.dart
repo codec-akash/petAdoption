@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_adoption/bloc/pet_bloc/pet_bloc.dart';
 import 'package:pet_adoption/model/pet_model.dart';
 import 'package:pet_adoption/widget/back_button.dart';
+import 'package:pet_adoption/widget/title_card.dart';
 
 class PetDetailsScreen extends StatefulWidget {
   final Pet pet;
@@ -48,26 +49,6 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
         ),
       ),
     );
-  }
-
-  Widget titlevalue(String title, String value) {
-    return RichText(
-        text: TextSpan(
-      text: title,
-      style: Theme.of(context)
-          .textTheme
-          .headlineSmall!
-          .copyWith(fontWeight: FontWeight.bold),
-      children: [
-        TextSpan(
-          text: value,
-          style: Theme.of(context)
-              .textTheme
-              .headlineSmall!
-              .copyWith(fontWeight: FontWeight.normal, fontSize: 20),
-        )
-      ],
-    ));
   }
 
   Widget successBottomSheet() {
@@ -181,7 +162,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
 
   @override
   void initState() {
-    isAdopted = widget.pet.isAdopted;
+    isAdopted = widget.pet.isAdopted ?? false;
     _confettiController =
         ConfettiController(duration: const Duration(seconds: 5));
     super.initState();
@@ -240,28 +221,37 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             const SizedBox(height: 20),
-                            titlevalue("name : ", " ${widget.pet.name!} Kgs"),
+                            TitleCard(
+                                title: "name : ",
+                                value: " ${widget.pet.name!} Kgs"),
                             const SizedBox(height: 10),
-                            titlevalue("weight : ",
-                                " ${widget.pet.weight!.metric!} Kgs"),
+                            TitleCard(
+                                title: "weight : ",
+                                value: " ${widget.pet.weight!.metric!} Kgs"),
                             const SizedBox(height: 10),
-                            titlevalue("height : ",
-                                " ${widget.pet.height!.metric!} m"),
+                            TitleCard(
+                                title: "height : ",
+                                value: " ${widget.pet.height!.metric!} m"),
                             if (widget.pet.breedGroup != null) ...[
                               const SizedBox(height: 10),
-                              titlevalue(
-                                  "breed : ", " ${widget.pet.breedGroup!} m"),
+                              TitleCard(
+                                  title: "breed : ",
+                                  value: " ${widget.pet.breedGroup!} m"),
                             ],
                             const SizedBox(height: 10),
-                            titlevalue(
-                                "life span : ", " ${widget.pet.lifeSpan!}"),
+                            TitleCard(
+                                title: "life span : ",
+                                value: " ${widget.pet.lifeSpan!}"),
                             const SizedBox(height: 10),
-                            titlevalue("temperament : ",
-                                " ${widget.pet.temperament!}"),
+                            TitleCard(
+                                title: "temperament : ",
+                                value: " ${widget.pet.temperament!}"),
                             const SizedBox(height: 10),
                             if (widget.pet.origin != null ||
                                 widget.pet.origin!.isNotEmpty) ...[
-                              titlevalue("origin : ", " ${widget.pet.origin!}"),
+                              TitleCard(
+                                  title: "origin : ",
+                                  value: " ${widget.pet.origin!}"),
                             ],
                           ],
                         ),
