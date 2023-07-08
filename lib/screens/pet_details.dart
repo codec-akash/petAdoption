@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_adoption/bloc/pet_bloc/pet_bloc.dart';
 import 'package:pet_adoption/model/pet_model.dart';
+import 'package:pet_adoption/screens/image_preview.dart';
 import 'package:pet_adoption/widget/back_button.dart';
 import 'package:pet_adoption/widget/title_card.dart';
 
@@ -162,7 +163,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
 
   @override
   void initState() {
-    isAdopted = widget.pet.isAdopted ?? false;
+    isAdopted = widget.pet.isAdopted;
     _confettiController =
         ConfettiController(duration: const Duration(seconds: 5));
     super.initState();
@@ -208,52 +209,80 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                   child: SliverToBoxAdapter(child: Container()),
                 ),
                 SliverToBoxAdapter(
-                  child: Column(
+                  child: Stack(
                     children: [
-                      Hero(
-                        tag: widget.pet.id!,
-                        child: CachedNetworkImage(
-                            imageUrl: widget.pet.image!.url!),
+                      Column(
+                        children: [
+                          Hero(
+                            tag: widget.pet.id!,
+                            child: CachedNetworkImage(
+                              imageUrl: widget.pet.image!.url!,
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                const SizedBox(height: 20),
+                                TitleCard(
+                                    title: "name : ",
+                                    value: " ${widget.pet.name!} Kgs"),
+                                const SizedBox(height: 10),
+                                TitleCard(
+                                    title: "weight : ",
+                                    value:
+                                        " ${widget.pet.weight!.metric!} Kgs"),
+                                const SizedBox(height: 10),
+                                TitleCard(
+                                    title: "height : ",
+                                    value: " ${widget.pet.height!.metric!} m"),
+                                if (widget.pet.breedGroup != null) ...[
+                                  const SizedBox(height: 10),
+                                  TitleCard(
+                                      title: "breed : ",
+                                      value: " ${widget.pet.breedGroup!} m"),
+                                ],
+                                const SizedBox(height: 10),
+                                TitleCard(
+                                    title: "life span : ",
+                                    value: " ${widget.pet.lifeSpan!}"),
+                                const SizedBox(height: 10),
+                                TitleCard(
+                                    title: "temperament : ",
+                                    value: " ${widget.pet.temperament!}"),
+                                const SizedBox(height: 10),
+                                if (widget.pet.origin != null ||
+                                    widget.pet.origin!.isNotEmpty) ...[
+                                  TitleCard(
+                                      title: "origin : ",
+                                      value: " ${widget.pet.origin!}"),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const SizedBox(height: 20),
-                            TitleCard(
-                                title: "name : ",
-                                value: " ${widget.pet.name!} Kgs"),
-                            const SizedBox(height: 10),
-                            TitleCard(
-                                title: "weight : ",
-                                value: " ${widget.pet.weight!.metric!} Kgs"),
-                            const SizedBox(height: 10),
-                            TitleCard(
-                                title: "height : ",
-                                value: " ${widget.pet.height!.metric!} m"),
-                            if (widget.pet.breedGroup != null) ...[
-                              const SizedBox(height: 10),
-                              TitleCard(
-                                  title: "breed : ",
-                                  value: " ${widget.pet.breedGroup!} m"),
-                            ],
-                            const SizedBox(height: 10),
-                            TitleCard(
-                                title: "life span : ",
-                                value: " ${widget.pet.lifeSpan!}"),
-                            const SizedBox(height: 10),
-                            TitleCard(
-                                title: "temperament : ",
-                                value: " ${widget.pet.temperament!}"),
-                            const SizedBox(height: 10),
-                            if (widget.pet.origin != null ||
-                                widget.pet.origin!.isNotEmpty) ...[
-                              TitleCard(
-                                  title: "origin : ",
-                                  value: " ${widget.pet.origin!}"),
-                            ],
-                          ],
+                      Positioned(
+                        top: 10,
+                        right: 10,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    ImagePreview(url: widget.pet.image!.url!)));
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.deepPurpleAccent,
+                            ),
+                            child: const Icon(
+                              Icons.preview_sharp,
+                              size: 26,
+                            ),
+                          ),
                         ),
                       ),
                     ],
